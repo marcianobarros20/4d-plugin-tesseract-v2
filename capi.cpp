@@ -467,6 +467,11 @@ TESS_API TessMutableIterator* TESS_CALL TessBaseAPIGetMutableIterator(TessBaseAP
     return handle->GetMutableIterator();
 }
 
+TESS_API char* TESS_CALL TessBaseAPIGetUTF8TextWithYield(TessBaseAPI* handle, void (*_PA_YieldAbsolute)(void))
+{
+	return handle->GetUTF8Text(_PA_YieldAbsolute);
+}
+
 TESS_API char* TESS_CALL TessBaseAPIGetUTF8Text(TessBaseAPI* handle)
 {
     return handle->GetUTF8Text();

@@ -1274,7 +1274,31 @@ MutableIterator* TessBaseAPI::GetMutableIterator() {
                              thresholder_->GetScaledYResolution(),
                              rect_left_, rect_top_, rect_width_, rect_height_);
 }
-
+	
+	/** Make a text string from the internal data structures. */
+	char* TessBaseAPI::GetUTF8Text(void (*_PA_YieldAbsolute)(void)) {
+  if (tesseract_ == NULL ||
+			(!recognition_done_ && Recognize(NULL) < 0))
+		return NULL;
+  STRING text("");
+  ResultIterator *it = GetIterator();
+	size_t pos = 0;
+  do {
+		if (it->Empty(RIL_PARA)) continue;
+		const std::unique_ptr<const char[]> para_text(it->GetUTF8Text(RIL_PARA));
+		text += para_text.get();
+		//breathe every 512 chars
+		pos++;
+		if((pos % 0x0200)==0) {
+		if(_PA_YieldAbsolute) _PA_YieldAbsolute();
+		}
+	} while (it->Next(RIL_PARA));
+  char* result = new char[text.length() + 1];
+  strncpy(result, text.string(), text.length() + 1);
+  delete it;
+  return result;
+	}
+	
 /** Make a text string from the internal data structures. */
 char* TessBaseAPI::GetUTF8Text() {
   if (tesseract_ == NULL ||
